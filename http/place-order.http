@@ -1,0 +1,19 @@
+@baseUrl = http://localhost:8080
+@jwtToken = paste-token-here
+@userId = 1
+@productId = 1
+
+POST {{baseUrl}}/api/v1/orders
+Authorization: Bearer {{jwtToken}}
+Content-Type: application/json
+
+{
+  "userId": {{userId}},
+  "idempotencyKey": "demo-order-001",
+  "items": [
+    {
+      "productId": {{productId}},
+      "quantity": 2
+    }
+  ]
+}

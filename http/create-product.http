@@ -1,0 +1,14 @@
+@baseUrl = http://localhost:8080
+@jwtToken = paste-token-here
+
+POST {{baseUrl}}/api/v1/products
+Authorization: Bearer {{jwtToken}}
+Content-Type: application/json
+
+{
+  "name": "Mechanical Keyboard",
+  "description": "Hot-swappable keyboard",
+  "price": 129.99,
+  "category": "Electronics",
+  "active": true
+}

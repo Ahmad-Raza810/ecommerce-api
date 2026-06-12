@@ -1,0 +1,13 @@
+@baseUrl = http://localhost:8080
+@jwtToken = paste-token-here
+@productId = 1
+
+POST {{baseUrl}}/api/v1/inventory
+Authorization: Bearer {{jwtToken}}
+Content-Type: application/json
+
+{
+  "productId": {{productId}},
+  "availableQuantity": 50,
+  "reservedQuantity": 0
+}

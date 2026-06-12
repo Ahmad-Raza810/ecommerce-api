@@ -1,0 +1,6 @@
+@baseUrl = http://localhost:8080
+@jwtToken = paste-token-here
+@orderId = 1
+
+POST {{baseUrl}}/api/v1/orders/{{orderId}}/cancel
+Authorization: Bearer {{jwtToken}}
