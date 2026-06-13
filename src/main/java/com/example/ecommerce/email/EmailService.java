@@ -10,66 +10,70 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.Context;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 @Service
 public class EmailService {
     private final JavaMailSender mailSender;
-    private final TemplateEngine templateEngine;
     private final EmailLogRepository emailLogRepository;
     private final String from;
 
     public EmailService(JavaMailSender mailSender,
-                        TemplateEngine templateEngine,
                         EmailLogRepository emailLogRepository,
                         @Value("${app.mail.from}") String from) {
         this.mailSender = mailSender;
-        this.templateEngine = templateEngine;
         this.emailLogRepository = emailLogRepository;
         this.from = from;
     }
 
     @Async("emailTaskExecutor")
     public void sendWelcomeEmail(User user) {
-        Context context = new Context();
-        context.setVariable("name", user.getFirstName());
-        send(user.getEmail(), "Welcome to E-Commerce", EmailType.WELCOME, "welcome-email", context);
+        Map<String, Object> variables = Map.of("name", user.getFirstName());
+        send(user.getEmail(), "Welcome to E-Commerce", EmailType.WELCOME, "welcome-email", variables);
     }
 
     @Async("emailTaskExecutor")
     public void sendOrderConfirmation(User user, CustomerOrder order) {
-        Context context = new Context();
-        context.setVariable("name", user.getFirstName());
-        context.setVariable("orderId", order.getId());
-        context.setVariable("total", order.getTotalAmount());
+        Map<String, Object> variables = Map.of(
+            "name", user.getFirstName(),
+            "orderId", order.getId(),
+            "total", order.getTotalAmount()
+        );
         send(user.getEmail(), "Order Confirmation #" + order.getId(), EmailType.ORDER_CONFIRMATION,
-                "order-confirmation", context);
+                "order-confirmation", variables);
     }
 
     @Async("emailTaskExecutor")
     public void sendOrderCancellation(User user, CustomerOrder order) {
-        Context context = new Context();
-        context.setVariable("name", user.getFirstName());
-        context.setVariable("orderId", order.getId());
+        Map<String, Object> variables = Map.of(
+            "name", user.getFirstName(),
+            "orderId", order.getId()
+        );
         send(user.getEmail(), "Order Cancelled #" + order.getId(), EmailType.ORDER_CANCELLATION,
-                "order-cancellation", context);
+                "order-cancellation", variables);
     }
 
     @Async("emailTaskExecutor")
     public void sendInventoryAlert(String recipient, String productName, int availableQuantity) {
-        Context context = new Context();
-        context.setVariable("productName", productName);
-        context.setVariable("availableQuantity", availableQuantity);
+        Map<String, Object> variables = Map.of(
+            "productName", productName,
+            "availableQuantity", availableQuantity
+        );
         send(recipient, "Inventory Alert: " + productName, EmailType.INVENTORY_ALERT,
-                "inventory-alert", context);
+                "inventory-alert", variables);
     }
 
-    public void send(String recipient, String subject, EmailType type, String template, Context context) {
+    public void send(String recipient, String subject, EmailType type, String templateName, Map<String, Object> variables) {
         try {
-            String html = templateEngine.process(template, context);
+            String html = loadTemplate(templateName);
+            for (Map.Entry<String, Object> entry : variables.entrySet()) {
+                String value = entry.getValue() != null ? entry.getValue().toString() : "";
+                html = html.replace("${" + entry.getKey() + "}", value);
+            }
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, StandardCharsets.UTF_8.name());
             helper.setFrom(from);
@@ -81,6 +85,17 @@ public class EmailService {
         } catch (MessagingException | RuntimeException ex) {
             logEmail(recipient, subject, type, EmailStatus.FAILED, ex.getMessage());
             throw new EmailException("Failed to send email", ex);
+        }
+    }
+
+    private String loadTemplate(String templateName) {
+        try (InputStream inputStream = getClass().getResourceAsStream("/templates/" + templateName + ".html")) {
+            if (inputStream == null) {
+                throw new IllegalArgumentException("Template not found: " + templateName);
+            }
+            return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new EmailException("Failed to read template: " + templateName, e);
         }
     }
 

@@ -10,10 +10,16 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+    show-sql: true
     open-in-view: false
     properties:
       hibernate:
         format_sql: true
+        show_sql: true
+        use_sql_comments: true
+        type:
+          descriptor:
+            sql: trace
 
   mail:
     host: smtp.gmail.com
@@ -26,6 +32,9 @@ spring:
           auth: true
           starttls:
             enable: true
+            required: true
+          ssl:
+            trust: smtp.gmail.com
 
 server:
   port: ${SERVER_PORT:8080}
@@ -53,4 +62,22 @@ springdoc:
 
 logging:
   pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} %5p [correlationId=%X{correlationId:-}] [%thread] --- %logger{36} : %msg%n"
     level: "%5p [correlationId=%X{correlationId:-}]"
+  level:
+    root: INFO
+    # --- Hibernate / JPA SQL Logging ---
+    org.hibernate.SQL: DEBUG
+    org.hibernate.orm.jdbc.bind: TRACE
+    org.hibernate.type.descriptor.sql: TRACE
+    org.hibernate.tool.schema: DEBUG
+    org.hibernate.engine.transaction: DEBUG
+    # --- Spring Framework ---
+    org.springframework.web: DEBUG
+    org.springframework.web.servlet.DispatcherServlet: DEBUG
+    org.springframework.transaction: DEBUG
+    # --- Error & Exception Handling ---
+    org.springframework.boot.web.servlet.error: DEBUG
+    org.springframework.web.servlet.mvc.method.annotation: DEBUG
+    # --- Your Application Package (change to your base package) ---
+    com.ecommerce: DEBUG
