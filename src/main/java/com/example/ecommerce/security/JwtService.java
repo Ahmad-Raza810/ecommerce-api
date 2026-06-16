@@ -22,7 +22,6 @@ public class JwtService {
     public JwtService(
             @Value("${app.jwt.secret}") String secret,
             @Value("${app.jwt.access-token-minutes}") long accessTokenMinutes) {
-        System.out.println("JWT Secret = [" + secret + "]");
         this.secretKey = buildKey(secret);
         this.accessTokenMinutes = accessTokenMinutes;
     }
@@ -56,10 +55,6 @@ public class JwtService {
     }
 
     private SecretKey buildKey(String secret) {
-        try {
-            return Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));
-        } catch (IllegalArgumentException ex) {
             return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
-        }
     }
 }
