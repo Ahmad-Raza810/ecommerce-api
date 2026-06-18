@@ -48,7 +48,7 @@ public class SecurityConfig {
                 }))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1/auth/**", "/api-docs/**", "/swagger-ui/**", "/swagger-ui.html",
-                                "/error").permitAll()
+                                "/error","/actuator/health","/actuator/info","/actuator/metrics","/actuator/beans","/actuator/env","/actuator/app-info").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/products/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/users").permitAll()
                         .requestMatchers("/api/v1/products/**", "/api/v1/inventory/**").hasRole("ADMIN")

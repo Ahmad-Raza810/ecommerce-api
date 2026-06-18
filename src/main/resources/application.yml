@@ -81,3 +81,9 @@ logging:
     org.springframework.web.servlet.mvc.method.annotation: DEBUG
     # --- Your Application Package (change to your base package) ---
     com.ecommerce: DEBUG
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
