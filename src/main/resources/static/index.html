@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Commerce API Testing Suite</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="app.css">
+</head>
+<body>
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="brand">
+                <span class="brand-icon">⚡</span>
+                <h2>Antigravity Suite</h2>
+            </div>
+            <nav class="nav-menu">
+                <button class="nav-item active" data-tab="auth-tab">
+                    <span class="nav-icon">👤</span> Authentication
+                </button>
+                <button class="nav-item" data-tab="products-tab">
+                    <span class="nav-icon">🛍️</span> Products
+                </button>
+                <button class="nav-item" data-tab="orders-tab">
+                    <span class="nav-icon">📦</span> Orders
+                </button>
+                <button class="nav-item" data-tab="inventory-tab">
+                    <span class="nav-icon">📊</span> Inventory
+                </button>
+                <button class="nav-item" data-tab="actuator-tab">
+                    <span class="nav-icon">⚙️</span> Actuator
+                </button>
+            </nav>
+            <div class="sidebar-footer">
+                <p>v1.0.0-SNAPSHOT</p>
+                <p class="status-indicator"><span class="dot green" id="api-status-dot"></span> <span id="api-status-text">API Online</span></p>
+            </div>
+        </aside>
+
+        <!-- Main Workspace -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="app-header">
+                <div class="header-info">
+                    <h1>E-Commerce API Testing</h1>
+                    <p class="subtitle">Mock requests, test security policies, and monitor real-time metrics.</p>
+                </div>
+                <div class="auth-status-card">
+                    <div class="token-meta">
+                        <span class="badge" id="role-badge">GUEST</span>
+                        <span class="user-email" id="header-user-email">Not Logged In</span>
+                    </div>
+                    <button class="btn btn-outline btn-sm hidden" id="logout-btn">Log Out</button>
+                </div>
+            </header>
+
+            <div class="workspace-grid">
+                <!-- Tab Panels Section (Left Panel) -->
+                <section class="panels-container card">
+                    
+                    <!-- TAB 1: AUTHENTICATION -->
+                    <div id="auth-tab" class="tab-panel active">
+                        <div class="panel-header">
+                            <h2>User Access & Credentials</h2>
+                            <p>Register new users (Admin/Customer), authenticate, and manage Bearer JWT tokens.</p>
+                        </div>
+                        
+                        <div class="grid-2col">
+                            <!-- Registration Form -->
+                            <div class="inner-card">
+                                <h3>Create Account</h3>
+                                <form id="register-form">
+                                    <div class="form-group-row">
+                                        <div class="form-group">
+                                            <label for="reg-firstname">First Name</label>
+                                            <input type="text" id="reg-firstname" required placeholder="John">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="reg-lastname">Last Name</label>
+                                            <input type="text" id="reg-lastname" required placeholder="Doe">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="reg-email">Email Address</label>
+                                        <input type="email" id="reg-email" required placeholder="john.doe@example.com">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="reg-password">Password (min 8 chars)</label>
+                                        <input type="password" id="reg-password" required minlength="8" placeholder="••••••••">
+                                    </div>
+                                    <div class="form-group-row">
+                                        <div class="form-group">
+                                            <label for="reg-phone">Phone (Optional)</label>
+                                            <input type="tel" id="reg-phone" placeholder="+1234567890">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="reg-role">Role</label>
+                                            <select id="reg-role" required>
+                                                <option value="CUSTOMER">Customer</option>
+                                                <option value="ADMIN">Admin</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary btn-block">Register & Sign In</button>
+                                </form>
+                            </div>
+
+                            <!-- Login Form -->
+                            <div class="inner-card">
+                                <h3>Sign In</h3>
+                                <form id="login-form">
+                                    <div class="form-group">
+                                        <label for="login-email">Email Address</label>
+                                        <input type="email" id="login-email" required placeholder="john.doe@example.com">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="login-password">Password</label>
+                                        <input type="password" id="login-password" required placeholder="••••••••">
+                                    </div>
+                                    <button type="submit" class="btn btn-secondary btn-block">Login</button>
+                                </form>
+
+                                <div class="quick-credentials">
+                                    <h4>Quick Fill Pre-seeded Credentials</h4>
+                                    <div class="creds-buttons">
+                                        <button class="btn btn-outline btn-xs" onclick="quickFill('admin@ecommerce.com', 'admin123')">Admin Credentials</button>
+                                        <button class="btn btn-outline btn-xs" onclick="quickFill('customer@ecommerce.com', 'customer123')">Customer Credentials</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Active JWT Token Display -->
+                        <div class="inner-card mt-4">
+                            <div class="token-title-row">
+                                <h3>Active JWT Bearer Token</h3>
+                                <button class="btn btn-xs btn-outline" id="copy-token-btn">Copy Token</button>
+                            </div>
+                            <pre class="token-viewer" id="token-display">No token active. You are making requests as Guest (Anonymous).</pre>
+                        </div>
+                    </div>
+
+                    <!-- TAB 2: PRODUCTS -->
+                    <div id="products-tab" class="tab-panel">
+                        <div class="panel-header">
+                            <h2>Product Management</h2>
+                            <p>Manage product catalog. <strong>Note:</strong> Writing/deleting products requires ADMIN privileges. GET requests are public.</p>
+                        </div>
+
+                        <div class="grid-2col-unequal">
+                            <!-- Product Form -->
+                            <div class="inner-card">
+                                <h3 id="product-form-title">Create New Product</h3>
+                                <form id="product-form">
+                                    <input type="hidden" id="prod-id">
+                                    <div class="form-group">
+                                        <label for="prod-name">Product Name</label>
+                                        <input type="text" id="prod-name" required placeholder="Premium Leather Wallet">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="prod-description">Description</label>
+                                        <textarea id="prod-description" rows="3" placeholder="Description of the product..."></textarea>
+                                    </div>
+                                    <div class="form-group-row">
+                                        <div class="form-group">
+                                            <label for="prod-price">Price ($)</label>
+                                            <input type="number" id="prod-price" step="0.01" min="0.01" required placeholder="49.99">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="prod-category">Category</label>
+                                            <input type="text" id="prod-category" required placeholder="Accessories">
+                                        </div>
+                                    </div>
+                                    <div class="form-group checkbox-group">
+                                        <input type="checkbox" id="prod-active" checked>
+                                        <label for="prod-active">Active (Visible in listings)</label>
+                                    </div>
+                                    <div class="form-actions-row">
+                                        <button type="submit" class="btn btn-primary" id="prod-submit-btn">Save Product</button>
+                                        <button type="button" class="btn btn-outline hidden" id="prod-cancel-btn">Cancel Edit</button>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <!-- Product List -->
+                            <div class="inner-card">
+                                <div class="list-header-row">
+                                    <h3>Product Catalog</h3>
+                                    <button class="btn btn-outline btn-sm" id="btn-refresh-products">Refresh List</button>
+                                </div>
+                                <div class="table-container">
+                                    <table class="table" id="products-table">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Name</th>
+                                                <th>Category</th>
+                                                <th>Price</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- Loaded dynamically -->
+                                            <tr>
+                                                <td colspan="6" class="text-center">Loading products...</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 3: ORDERS -->
+                    <div id="orders-tab" class="tab-panel">
+                        <div class="panel-header">
+                            <h2>Order System</h2>
+                            <p>Place orders, cancel orders, and search order history. Authenticated users can only see their own orders unless logged in as ADMIN.</p>
+                        </div>
+
+                        <div class="grid-2col-unequal">
+                            <!-- Place Order Form -->
+                            <div class="inner-card">
+                                <h3>Place New Order</h3>
+                                <form id="order-form">
+                                    <div class="form-group">
+                                        <label for="order-userid">Customer User ID</label>
+                                        <input type="number" id="order-userid" required placeholder="e.g. 1">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="order-idempotency">Idempotency Key (Optional)</label>
+                                        <input type="text" id="order-idempotency" placeholder="Unique UUID or String">
+                                    </div>
+                                    
+                                    <div class="order-items-section">
+                                        <div class="items-header">
+                                            <h4>Cart Items</h4>
+                                            <button type="button" class="btn btn-outline btn-xs" id="btn-add-order-item">+ Add Item</button>
+                                        </div>
+                                        <div id="order-items-list" class="order-items-list">
+                                            <!-- Dynamic items added here -->
+                                            <div class="order-item-row" data-index="0">
+                                                <input type="number" class="item-prod-id" required placeholder="Prod ID" style="width: 50%;">
+                                                <input type="number" class="item-qty" min="1" required placeholder="Qty" value="1" style="width: 35%;">
+                                                <button type="button" class="btn-remove-item" onclick="removeOrderItem(this)">×</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <button type="submit" class="btn btn-primary btn-block mt-4">Submit Order</button>
+                                </form>
+                            </div>
+
+                            <!-- View / Query Orders -->
+                            <div class="inner-card">
+                                <h3>Search & Manage Orders</h3>
+                                <div class="search-box-row">
+                                    <div class="form-group" style="flex: 1;">
+                                        <label for="search-order-id">Order ID</label>
+                                        <div class="input-btn-group">
+                                            <input type="number" id="search-order-id" placeholder="e.g. 1">
+                                            <button class="btn btn-secondary btn-sm" id="btn-get-order">Fetch Order</button>
+                                        </div>
+                                    </div>
+                                    <div class="form-group" style="flex: 1;">
+                                        <label for="search-user-id">User ID (Orders history)</label>
+                                        <div class="input-btn-group">
+                                            <input type="number" id="search-user-id" placeholder="e.g. 1">
+                                            <button class="btn btn-secondary btn-sm" id="btn-get-user-orders">List Orders</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="orders-display-list mt-4" id="orders-list-results">
+                                    <!-- Rendered search results or current orders list -->
+                                    <div class="blank-state">
+                                        <p>Perform a search above or place an order to see results here.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 4: INVENTORY -->
+                    <div id="inventory-tab" class="tab-panel">
+                        <div class="panel-header">
+                            <h2>Inventory & Stock Controls</h2>
+                            <p>Verify stock status, update available counts, and simulate reservations/releases of items.</p>
+                        </div>
+
+                        <div class="grid-2col">
+                            <!-- Stock Check & Create -->
+                            <div class="inner-card">
+                                <h3>Check/Create Stock</h3>
+                                <div class="form-group">
+                                    <label for="inv-productId-check">Fetch Inventory by Product ID</label>
+                                    <div class="input-btn-group">
+                                        <input type="number" id="inv-productId-check" required placeholder="Product ID">
+                                        <button class="btn btn-secondary" id="btn-get-inventory">Fetch</button>
+                                    </div>
+                                </div>
+                                <div class="inventory-status-display mt-4 hidden" id="inventory-info-card">
+                                    <div class="info-row"><strong>Product ID:</strong> <span id="inv-disp-prod-id"></span></div>
+                                    <div class="info-row"><strong>Available:</strong> <span class="badge" id="inv-disp-avail"></span></div>
+                                    <div class="info-row"><strong>Reserved:</strong> <span class="badge" id="inv-disp-reserved"></span></div>
+                                </div>
+
+                                <hr class="mt-4 mb-4">
+
+                                <h3>Initialize Inventory Record</h3>
+                                <form id="inventory-init-form">
+                                    <div class="form-group">
+                                        <label for="inv-productId-init">Product ID</label>
+                                        <input type="number" id="inv-productId-init" required placeholder="Product ID">
+                                    </div>
+                                    <div class="form-group-row">
+                                        <div class="form-group">
+                                            <label for="inv-avail-init">Available Quantity</label>
+                                            <input type="number" id="inv-avail-init" min="0" required placeholder="50">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="inv-res-init">Reserved Quantity</label>
+                                            <input type="number" id="inv-res-init" min="0" required placeholder="0">
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary btn-block">Initialize Inventory</button>
+                                </form>
+                            </div>
+
+                            <!-- Stock Adjustments -->
+                            <div class="inner-card">
+                                <h3>Stock Adjustments & Reservations</h3>
+                                <form id="inventory-adjust-form">
+                                    <div class="form-group">
+                                        <label for="inv-productId-adj">Product ID</label>
+                                        <input type="number" id="inv-productId-adj" required placeholder="Product ID">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="inv-avail-adj">New Available Stock Count</label>
+                                        <input type="number" id="inv-avail-adj" min="0" required placeholder="e.g. 100">
+                                    </div>
+                                    <button type="submit" class="btn btn-secondary btn-block">Update Stock Count</button>
+                                </form>
+
+                                <hr class="mt-4 mb-4">
+
+                                <h3>Simulate Stock Reservation / Release</h3>
+                                <div class="form-group">
+                                    <label for="inv-productId-sim">Product ID</label>
+                                    <input type="number" id="inv-productId-sim" placeholder="Product ID">
+                                </div>
+                                <div class="form-group">
+                                    <label for="inv-qty-sim">Quantity</label>
+                                    <input type="number" id="inv-qty-sim" min="1" placeholder="Quantity">
+                                </div>
+                                <div class="form-group-row mt-2">
+                                    <button class="btn btn-outline" id="btn-reserve-stock" style="flex: 1;">🔒 Reserve Stock</button>
+                                    <button class="btn btn-outline" id="btn-release-stock" style="flex: 1;">🔓 Release Stock</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 5: ACTUATOR -->
+                    <div id="actuator-tab" class="tab-panel">
+                        <div class="panel-header">
+                            <h2>Actuator Diagnostics</h2>
+                            <p>Real-time system health checks, metrics dashboard, and spring context inspection.</p>
+                        </div>
+
+                        <div class="grid-2col">
+                            <!-- Health and System Info -->
+                            <div class="inner-card">
+                                <div class="flex-space-between">
+                                    <h3>System Health</h3>
+                                    <button class="btn btn-outline btn-xs" id="btn-refresh-actuator">Refresh Diagnostics</button>
+                                </div>
+                                
+                                <div class="health-display mt-2">
+                                    <div class="health-gauge">
+                                        <div class="health-ring" id="health-ring-color">
+                                            <span class="health-status-value" id="act-health-status">UP</span>
+                                        </div>
+                                    </div>
+                                    <div class="health-details">
+                                        <div class="info-row"><strong>Database Connectivity:</strong> <span class="badge" id="act-health-db">UP</span></div>
+                                        <div class="info-row"><strong>Disk Space:</strong> <span class="badge" id="act-health-disk">UP</span></div>
+                                        <div class="info-row"><strong>Mail SMTP Service:</strong> <span class="badge" id="act-health-mail">UP</span></div>
+                                    </div>
+                                </div>
+
+                                <h3 class="mt-4">Metrics</h3>
+                                <div class="metric-container">
+                                    <div class="metric-card">
+                                        <span class="metric-title">JVM Memory</span>
+                                        <span class="metric-value" id="metric-memory">-- MB</span>
+                                        <div class="metric-bar-bg"><div class="metric-bar-fill" id="metric-memory-bar" style="width: 0%"></div></div>
+                                    </div>
+                                    <div class="metric-card">
+                                        <span class="metric-title">System CPU</span>
+                                        <span class="metric-value" id="metric-cpu">-- %</span>
+                                        <div class="metric-bar-bg"><div class="metric-bar-fill" id="metric-cpu-bar" style="width: 0%"></div></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Beans Inspector -->
+                            <div class="inner-card">
+                                <h3>Spring Context Beans</h3>
+                                <div class="form-group">
+                                    <input type="text" id="bean-search" placeholder="Search beans by class/name...">
+                                </div>
+                                <div class="beans-list-container">
+                                    <ul class="beans-list" id="beans-list-display">
+                                        <li>Loading spring beans...</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </section>
+
+                <!-- Console & Log Output (Right Panel) -->
+                <section class="console-container card">
+                    <div class="console-header">
+                        <div class="console-title">
+                            <span class="console-dot animate-pulse"></span>
+                            <h3>Live Request Console</h3>
+                        </div>
+                        <button class="btn btn-outline btn-xs" id="clear-console-btn">Clear Logs</button>
+                    </div>
+                    <div class="console-logs" id="console-logs-display">
+                        <div class="log-placeholder">
+                            <p>No requests recorded yet.</p>
+                            <p class="small">Interact with any form on the left to execute API queries and see HTTP payloads here.</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Script imports -->
+    <script src="app.js"></script>
+</body>
+</html>

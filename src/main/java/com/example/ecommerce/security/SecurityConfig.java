@@ -47,8 +47,10 @@ public class SecurityConfig {
                             ApiResponse.failure("Unauthorized", List.of()));
                 }))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/auth/**", "/api-docs/**", "/swagger-ui/**", "/swagger-ui.html",
-                                "/error","/actuator/health","/actuator/info","/actuator/metrics","/actuator/beans","/actuator/env","/actuator/app-info").permitAll()
+                        .requestMatchers("/", "/index.html", "/app.css", "/app.js", "/favicon.ico",
+                                "/api/v1/auth/**", "/api-docs/**", "/swagger-ui/**", "/swagger-ui.html",
+                                "/error").permitAll()
+                        .requestMatchers("/actuator/health","/actuator/info","/actuator/metrics","/actuator/beans","/actuator/env").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/v1/products/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/users").permitAll()
                         .requestMatchers("/api/v1/products/**", "/api/v1/inventory/**").hasRole("ADMIN")
