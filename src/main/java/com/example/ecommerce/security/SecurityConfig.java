@@ -1,6 +1,7 @@
 package com.example.ecommerce.security;
 
 import com.example.ecommerce.common.ApiResponse;
+import com.example.ecommerce.filter.JwtAuthenticationFilter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;

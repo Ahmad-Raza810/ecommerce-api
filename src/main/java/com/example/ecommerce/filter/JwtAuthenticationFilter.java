@@ -1,5 +1,7 @@
-package com.example.ecommerce.security;
+package com.example.ecommerce.filter;
 
+import com.example.ecommerce.security.CustomUserDetailsService;
+import com.example.ecommerce.security.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
