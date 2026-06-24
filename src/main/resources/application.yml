@@ -54,6 +54,34 @@ app:
   seed:
     enabled: ${DATA_SEEDER_ENABLED:true}
 
+  rate-limit:
+    enabled: true
+    default-anonymous-capacity: 20
+    default-anonymous-refill: 20
+    default-anonymous-duration-minutes: 1
+    default-authenticated-capacity: 100
+    default-authenticated-refill: 100
+    default-authenticated-duration-minutes: 1
+    excluded-paths:
+      - "/"
+      - "/index.html"
+      - "/app.css"
+      - "/app.js"
+      - "/favicon.ico"
+      - "/api-docs/**"
+      - "/swagger-ui/**"
+      - "/swagger-ui.html"
+      - "/error"
+    path-limits:
+      "/api/v1/auth/login":
+        capacity: 5
+        refill: 5
+        duration-minutes: 1
+      "/api/v1/auth/register":
+        capacity: 5
+        refill: 5
+        duration-minutes: 1
+
 springdoc:
   api-docs:
     path: /api-docs
